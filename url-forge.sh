@@ -51,8 +51,11 @@ while IFS= read -r line; do
         concat_url="$url/$line"
         echo "$concat_url">>"$out"
 done < "$file"
-cat url_out.txt | httpx -sc -title -silent -o url_out.txt
-echo -e "${green}${bold}  Success!${nc} URLs saved to $out ${bold} Enjoy :) ${nc}"
+httpx -sc -title -silent -o "$out" < "$out"
+
+url_count=$(wc -l < "$out")
+echo -e "${green}${bold}  Success!${nc} URLs saved to $out ${bold} ${red} ${url_count}  URLs Forged!${nc})."
+echo -e "${green} ${bold} Enjoy :) ${nc}"
 }
 
 step1
