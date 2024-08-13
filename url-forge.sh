@@ -7,11 +7,26 @@ blue='\033[0;34m'
 nc='\033[0m' #no color
 bold='\033[1m'
 
+#check if httpx is installed
+step1() {
+        if ! command -v httpx &> /dev/null; then
+
+                echo -e "${red} ${bold}ERROR: ${nc} httpx is not installed. Please install httpx"
+                echo -e "${blue}You can install httpx using the following command:${nc}"
+                echo -e "${blue}go install -v github.com/projectdiscovery/httpx/cmd/httpx@latest${nc}"
+                exit 1
+        fi
+}
+
+
+step2(){
 if [ "$#" -ne 2 ]; then
         echo "Usage: $0 <URL> <file_path>"
         exit 1
 fi
+}
 
+step3(){
 url=$1
 file=$2
 
@@ -26,7 +41,9 @@ if [ ! -f "$file" ]; then
 fi
 
 out="url_out.txt" > "$out"
+}
 
+step4(){
 while IFS= read -r line; do
         line=$(echo "$line" | xargs)
 
@@ -34,4 +51,11 @@ while IFS= read -r line; do
         concat_url="$url/$line"
         echo "$concat_url">>"$out"
 done < "$file"
-echo -e "${green}${bold}  Success!${nc} URLs saved to $out$ {bold} Enjoy :) ${nc}"
+cat url_out.txt | httpx -sc -title -silent -o url_out.txt
+echo -e "${green}${bold}  Success!${nc} URLs saved to $out ${bold} Enjoy :) ${nc}"
+}
+
+step1
+step2 "$@"
+step3 "$@"
+step4
